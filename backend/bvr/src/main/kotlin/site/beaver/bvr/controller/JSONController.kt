@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import site.beaver.bvr.model.AllBeavers
 import site.beaver.bvr.model.Beaver
 import java.io.File
 
@@ -22,15 +23,15 @@ class JSONController {
 	}
 
 	@GetMapping("/random")
-	fun randomBeaver(): String {
-		return Gson().toJson(Beaver("dsfsd","/api/beaver","jldsf"))
+	fun randomBeaver(): Beaver {
+		return Beaver("/api/beaver/all", "/api/beaver/all/X", "")
 	}
 
 	@GetMapping("/all/{beaverId}")
-	fun getBeaver(@PathVariable beaverId: String): String{
+	fun getBeaver(@PathVariable beaverId: String): Beaver{
 		val img = JSONController::class.java.getResource("/images/beaverpicture ($beaverId).jpg")
 		print(img)
-		return Gson().toJson(Beaver(beaverId,"dfsdf","jldsf"))
+		return Beaver("/api/beaver/all", "/api/beaver/all/$beaverId", img.toString())
 	}
 
 	@GetMapping("/all/{beaverId}/image")
@@ -45,7 +46,12 @@ class JSONController {
 	}
 
 	@GetMapping("/all")
-	fun getAll(): String {
-	 	return ""
+	fun getAll(): AllBeavers {
+		val res = mutableListOf<String>()
+		val dir = JSONController::class.java.getResource("/images")
+		File(dir.toURI()).walk().forEach{
+			res.add(it.name)
+		}
+		return AllBeavers("/api/beaver", "/api/beaver/all", res)
 	}
 }
