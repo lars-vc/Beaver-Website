@@ -18,12 +18,15 @@ import java.io.IOException
 import javax.servlet.http.HttpServletResponse
 
 import org.springframework.web.bind.annotation.RequestMethod
+import java.net.InetAddress
 
 
 @RestController
 @RequestMapping("/api/beaver")
 class JSONController {
-	val preurl = "localhost:8080"
+	val ip: InetAddress = InetAddress.getLocalHost();
+	//val preurl: String = ip.hostName;
+	val preurl = "http://afad79cffe92.ngrok.io"
 
 	@GetMapping
 	fun default(): HashMap<String, String> {
