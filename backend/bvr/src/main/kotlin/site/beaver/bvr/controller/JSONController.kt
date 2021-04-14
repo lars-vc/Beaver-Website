@@ -44,6 +44,24 @@ class JSONController {
 		return Beaver("$preurl/api/beaver/all", "$preurl/api/beaver/$res", "$preurl/api/beaver/$res/image")
 	}
 
+	@RequestMapping(
+		value = ["/random/image"],
+		method = [RequestMethod.GET],
+		produces = [MediaType.IMAGE_JPEG_VALUE]
+	)
+	fun randomImage(response: HttpServletResponse) {
+		var str = ""
+		val dir = JSONController::class.java.getResource("/images")
+		File(dir.toURI()).walk().drop(1).shuffled().take(1).forEach {
+			str = it.toString()
+		}
+		val res = str.filter { it.isDigit() }
+		val imgFile = ClassPathResource("images/beaverpicture ($res).jpg")
+		response.contentType = MediaType.IMAGE_JPEG_VALUE
+		StreamUtils.copy(imgFile.inputStream, response.outputStream)
+	}
+
+
 	@GetMapping("/{beaverId}")
 	fun getBeaver(@PathVariable beaverId: String): Beaver {
 		return Beaver(
@@ -68,9 +86,6 @@ class JSONController {
 		value = ["/{beaverId}/image"],
 		method = [RequestMethod.GET],
 		produces = [MediaType.IMAGE_JPEG_VALUE]
-	)
-	@Throws(
-		IOException::class
 	)
 	fun getImage(response: HttpServletResponse, @PathVariable beaverId: String) {
 		val imgFile = ClassPathResource("images/beaverpicture ($beaverId).jpg")
